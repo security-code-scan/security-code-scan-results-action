@@ -2,7 +2,7 @@ name: 'SecurityCodeScan'
 description: 'Security Code Scan action to upload code scanning results'
 inputs:
   sarif_directory:
-    description: The directory of SARIF files to be uploaded.
+    description: The output directory where SARIF files should be collected.
     required: false
     default: '../results'
 runs:
