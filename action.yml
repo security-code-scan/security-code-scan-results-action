@@ -5,10 +5,6 @@ inputs:
     description: The directory of SARIF files to be uploaded.
     required: false
     default: '../results'
-  checkout_path:
-    description: "The path at which the analyzed repository was checked out. Used to relativize any absolute paths in the uploaded SARIF file."
-    required: false
-    default: ${{ github.workspace }}
 runs:
   using: "composite"
   steps:
@@ -45,9 +41,3 @@ runs:
           mv $sarifFile.tmp $sarifFile
           mv $sarifFile $outputDir/$((i++)).sarif
         done
-
-    - name: Upload sarif
-      uses: github/codeql-action/upload-sarif@v1
-      with:
-        sarif_file: ${{ inputs.sarif_directory }}
-        checkout_path: ${{ inputs.checkout_path }}
