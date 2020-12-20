@@ -24,6 +24,8 @@ runs:
           mv $sarifFile.tmp $sarifFile
           jq 'del(.runs[].tool.driver.rules[].shortDescription)' $sarifFile > $sarifFile.tmp
           mv $sarifFile.tmp $sarifFile
+          jq 'del(.runs[].language)' $sarifFile > $sarifFile.tmp
+          mv $sarifFile.tmp $sarifFile
           jq '
             def walk(f):
               . as $in
