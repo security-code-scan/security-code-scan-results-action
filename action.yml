@@ -1,0 +1,54 @@
+name: 'SecurityCodeScan'
+description: 'Security Code Scan action to upload code scanning results'
+inputs:
+  sarif_directory:
+    description: The directory of SARIF files to be uploaded.
+    required: false
+    default: '../results'
+  checkout_path:
+    description: "The path at which the analyzed repository was checked out. Used to relativize any absolute paths in the uploaded SARIF file."
+    required: false
+    default: ${{ github.workspace }}
+runs:
+  using: "composite"
+  runs-on: windows-latest
+  steps:
+    - name: Convert sarif
+      shell: bash
+      run: |
+        dotnet tool install --global Sarif.Multitool
+        outputDir="${{ inputs.sarif_directory }}"
+        mkdir $outputDir
+
+        i=0
+        for sarifFile in $(find ./ -name '*.sarif')
+        do
+          sarif transform $sarifFile --output $sarifFile -f --sarif-output-version Current
+          sarif query $sarifFile --expression "RuleId |> SCS" -p -f -o $sarifFile
+          jq '.runs[].tool.driver.name = "SecurityCodeScan"' $sarifFile > $sarifFile.tmp
+          mv $sarifFile.tmp $sarifFile
+          jq 'del(.runs[].tool.driver.rules[].shortDescription)' $sarifFile > $sarifFile.tmp
+          mv $sarifFile.tmp $sarifFile
+          jq '
+            def walk(f):
+              . as $in
+              | if type == "object" then
+                reduce keys[] as $key
+                  ( {}; . + { ($key):  ($in[$key] | walk(f)) } ) | f
+              elif type == "array" then map( walk(f) ) | f
+              else f
+              end;
+          walk( if type == "object" and has("helpUri")
+                then .help.text += .helpUri
+                else .
+                end)
+          ' $sarifFile > $sarifFile.tmp
+          mv $sarifFile.tmp $sarifFile
+          mv $sarifFile $outputDir/$((i++)).sarif
+        done
+
+    - name: Upload sarif
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: ${{ inputs.sarif_directory }}
+        checkout_path: ${{ inputs.checkout_path }}
