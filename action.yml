@@ -11,7 +11,6 @@ inputs:
     default: ${{ github.workspace }}
 runs:
   using: "composite"
-  runs-on: windows-latest
   steps:
     - name: Convert sarif
       shell: bash
