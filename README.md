@@ -52,8 +52,8 @@ jobs:
 
       - name: Build
         run: |
-          dotnet add src/SourcesFolderName/ProjectName.csproj package SecurityCodeScan.VS2017
-          dotnet add src/SourcesFolderName2/ProjectName2.csproj package SecurityCodeScan.VS2017
+          dotnet add src/SourcesFolderName/ProjectName.csproj package SecurityCodeScan.VS2019
+          dotnet add src/SourcesFolderName2/ProjectName2.csproj package SecurityCodeScan.VS2019
           dotnet build /p:ErrorLog=analysis.sarif
         
       - name: Convert sarif for uploading to GitHub
