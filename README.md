@@ -1,6 +1,6 @@
 # Security-Code-Scan Action
 
-This action is designed to run as part of a workflow that builds [SecurityCodeScan](https://www.nuget.org/packages/SecurityCodeScan/) or [SecurityCodeScan.VS2017](https://www.nuget.org/packages/SecurityCodeScan.VS2017/) referencing projects.
+This action is designed to run as part of a workflow that builds [SecurityCodeScan](https://www.nuget.org/packages/SecurityCodeScan/), [SecurityCodeScan.VS2017](https://www.nuget.org/packages/SecurityCodeScan.VS2017/) or  [SecurityCodeScan.VS2019](https://www.nuget.org/packages/SecurityCodeScan.VS2019/) referencing projects.
 
 It produces a GitHub compatible SARIF file for uploading to the repository 'Code scanning alerts'.
 
@@ -14,7 +14,7 @@ See [action.yml](action.yml)
 
 ### Workflow Examples
 
-The recommended way to add this action to your workflow, is with a subsequent action that uploads the prepared SARIF files to the repository 'Code scanning alerts'. The analyzed projects must be already referencing [SecurityCodeScan](https://www.nuget.org/packages/SecurityCodeScan/) or [SecurityCodeScan.VS2017](https://www.nuget.org/packages/SecurityCodeScan.VS2017/) Nuget package.  
+The recommended way to add this action to your workflow, is with a subsequent action that uploads the prepared SARIF files to the repository 'Code scanning alerts'. The analyzed projects must be already referencing [SecurityCodeScan](https://www.nuget.org/packages/SecurityCodeScan/), [SecurityCodeScan.VS2017](https://www.nuget.org/packages/SecurityCodeScan.VS2017/) or  [SecurityCodeScan.VS2019](https://www.nuget.org/packages/SecurityCodeScan.VS2019/) Nuget package.  
 For example:
 
 ```yaml
