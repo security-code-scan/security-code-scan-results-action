@@ -27,6 +27,8 @@ runs:
           mv $sarifFile.tmp $sarifFile
           jq 'del(.runs[].results[].ruleIndex)' $sarifFile > $sarifFile.tmp
           mv $sarifFile.tmp $sarifFile
+          jq 'del(.runs[].results[].relatedLocations)' $sarifFile > $sarifFile.tmp
+          mv $sarifFile.tmp $sarifFile
           jq '.runs[].tool.driver.name = "SecurityCodeScan"' $sarifFile > $sarifFile.tmp
           mv $sarifFile.tmp $sarifFile
           jq '.runs[].tool.driver.fullName = "Vulnerability Patterns Detector for C# and VB.NET"' $sarifFile > $sarifFile.tmp
