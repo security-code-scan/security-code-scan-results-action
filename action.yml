@@ -23,7 +23,15 @@ runs:
         do
           sarif transform $sarifFile --output $sarifFile -f --sarif-output-version Current
           sarif query $sarifFile --expression "RuleId |> SCS" -p -f -o $sarifFile
+          jq 'del(.runs[].tool.driver.rules[] | select(.id | startswith("SCS") | not))' $sarifFile > $sarifFile.tmp
+          mv $sarifFile.tmp $sarifFile
+          jq 'del(.runs[].results[].ruleIndex)' $sarifFile > $sarifFile.tmp
+          mv $sarifFile.tmp $sarifFile
           jq '.runs[].tool.driver.name = "SecurityCodeScan"' $sarifFile > $sarifFile.tmp
+          mv $sarifFile.tmp $sarifFile
+          jq '.runs[].tool.driver.fullName = "Vulnerability Patterns Detector for C# and VB.NET"' $sarifFile > $sarifFile.tmp
+          mv $sarifFile.tmp $sarifFile
+          jq '.runs[].tool.driver.informationUri = "https://security-code-scan.github.io"' $sarifFile > $sarifFile.tmp
           mv $sarifFile.tmp $sarifFile
           jq 'del(.runs[].tool.driver.rules[].shortDescription)' $sarifFile > $sarifFile.tmp
           mv $sarifFile.tmp $sarifFile
