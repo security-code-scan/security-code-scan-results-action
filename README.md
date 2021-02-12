@@ -34,7 +34,7 @@ jobs:
           dotnet build /p:ErrorLog=analysis.sarif
         
       - name: Convert sarif for uploading to GitHub
-        uses: security-code-scan/security-code-scan-results-action@v1.0
+        uses: security-code-scan/security-code-scan-results-action@v1.2
         
       - name: Upload sarif	
         uses: github/codeql-action/upload-sarif@v1
@@ -65,7 +65,7 @@ jobs:
           dotnet build /p:ErrorLog=analysis.sarif
         
       - name: Convert sarif for uploading to GitHub
-        uses: security-code-scan/security-code-scan-results-action@v1.0
+        uses: security-code-scan/security-code-scan-results-action@v1.2
         
       - name: Upload sarif	
         uses: github/codeql-action/upload-sarif@v1
