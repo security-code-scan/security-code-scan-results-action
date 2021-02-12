@@ -1,4 +1,4 @@
-# Security-Code-Scan Action
+# Security-Code-Scan Results Action
 
 This action is designed to run as part of a workflow that builds projects referencing NuGet [SecurityCodeScan.VS2019](https://www.nuget.org/packages/SecurityCodeScan.VS2019/).
 
@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v2
       
       - name: Set up projects
-        uses: security-code-scan/security-code-scan-add-action@main
+        uses: security-code-scan/security-code-scan-add-action@v1.0
 
       - name: Build
         run: |
@@ -35,7 +35,7 @@ jobs:
           dotnet build
         
       - name: Convert sarif for uploading to GitHub
-        uses: security-code-scan/security-code-scan-results-action@main
+        uses: security-code-scan/security-code-scan-results-action@v1.2
         
       - name: Upload sarif	
         uses: github/codeql-action/upload-sarif@v1
