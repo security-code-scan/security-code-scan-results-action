@@ -76,12 +76,12 @@ For .NET 4.x example see [FullDotNetWebApp demo repository](https://github.com/s
 ## FAQ
 
 ### Q:
-I have added `security-code-scan/security-code-scan-results-action` and `github/codeql-action/upload-sarif`, but doesn't see any results.
+I have added `security-code-scan/security-code-scan-results-action` and `github/codeql-action/upload-sarif`, but I don't see any results.
 ### A:
 Make sure `/p:ErrorLog=analysis.sarif` parameter is specified for `dotnet build` command in your workflow. See [DotNetCoreWebApp demo repository](security-code-scan/DotNetCoreWebApp) and [FullDotNetWebApp demo repository](https://github.com/security-code-scan/FullDotNetWebApp) examples for the workflow setup.
 
 ### Q:
-I have added `/p:ErrorLog=analysis.sarif`, but doesn't see any results.
+I have added `/p:ErrorLog=analysis.sarif`, but I don't see any results.
 ### A:
 [SecurityCodeScan.VS2019](https://www.nuget.org/packages/SecurityCodeScan.VS2019/) must be added to the projects you want to analyze. You can add it as any other NuGet and commit or you may script adding the NuGet in your workflow:
 
