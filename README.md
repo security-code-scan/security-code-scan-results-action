@@ -14,8 +14,6 @@ See [action.yml](action.yml)
 
 ### Workflow Examples
 
-The recommended way to add this action to your workflow is with a subsequent action that uploads the prepared SARIF files to the repository 'Code scanning alerts'.
-
 ```yaml
 on:
   push:
