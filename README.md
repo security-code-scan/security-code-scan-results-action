@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v2
       
       - name: Set up projects
-        uses: security-code-scan/security-code-scan-add-action@v1.0
+        uses: security-code-scan/security-code-scan-add-action@v1.1
 
       - name: Build
         run: |
