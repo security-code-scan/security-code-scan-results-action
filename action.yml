@@ -17,42 +17,61 @@ runs:
         dotnet tool install --global Sarif.Multitool --version 2.3.10
         outputDir="${{ inputs.sarif_directory }}"
         mkdir $outputDir
+        
+        cat << EOF > convert.js
+          const fs = require('fs')
+
+          var args = process.argv.slice(2);
+          var sarif = JSON.parse(fs.readFileSync(args[0], "utf8"));
+
+          for (run of sarif.runs) {
+            run.tool.driver.name = "SecurityCodeScan";
+            run.tool.driver.fullName  = "Vulnerability Patterns Detector for C# and VB.NET";
+            run.tool.driver.informationUri  = "https://security-code-scan.github.io";
+
+            run.results = run.results.filter((e => e.ruleId.startsWith("SCS")));
+            run.tool.driver.rules = run.tool.driver.rules.filter((e => e.id.startsWith("SCS")));
+
+            for (let i = 0; i < run.results.length; ++i) {
+              run.results[i].ruleIndex = undefined;
+              run.results[i].relatedLocations = undefined;
+
+              if (run.results[i].locations === undefined) {
+                const match = run.results[i].message.text.match(/(.*) in (.*)\((\d+)\)(:.*)/);
+                run.results[i].message.text = match[1];
+                run.results[i].locations = [{
+                  "physicalLocation" : {
+                    "artifactLocation" : {
+                      "uri" : "file:///" + match[2].replace(/\\\\/g, "/")
+                    },
+                    "region" : {
+                      "startLine": Number(match[3]),
+                      "startColumn": 1,
+                      "endLine": Number(match[3]),
+                      "endColumn": 1
+                    }
+                  }
+                }];
+              }
+            }
+
+            for (rule of run.tool.driver.rules) {
+              rule.shortDescription = undefined;
+              rule.help = { "text" : rule.helpUri};
+            }
+
+            run.language = undefined;
+          }
+
+          var converted = JSON.stringify(sarif, null, 2);
+          console.log(converted);
+          fs.writeFileSync(args[1], converted);
+        EOF
 
         i=0
         for sarifFile in $(find ./ -name '*.sarif')
         do
           sarif transform $sarifFile --output $sarifFile -f --sarif-output-version Current
-          sarif query $sarifFile --expression "RuleId |> SCS" -p -f -o $sarifFile
-          jq 'del(.runs[].tool.driver.rules[] | select(.id | startswith("SCS") | not))' $sarifFile > $sarifFile.tmp
-          mv $sarifFile.tmp $sarifFile
-          jq 'del(.runs[].results[].ruleIndex)' $sarifFile > $sarifFile.tmp
-          mv $sarifFile.tmp $sarifFile
-          jq 'del(.runs[].results[].relatedLocations)' $sarifFile > $sarifFile.tmp
-          mv $sarifFile.tmp $sarifFile
-          jq '.runs[].tool.driver.name = "SecurityCodeScan"' $sarifFile > $sarifFile.tmp
-          mv $sarifFile.tmp $sarifFile
-          jq '.runs[].tool.driver.fullName = "Vulnerability Patterns Detector for C# and VB.NET"' $sarifFile > $sarifFile.tmp
-          mv $sarifFile.tmp $sarifFile
-          jq '.runs[].tool.driver.informationUri = "https://security-code-scan.github.io"' $sarifFile > $sarifFile.tmp
-          mv $sarifFile.tmp $sarifFile
-          jq 'del(.runs[].tool.driver.rules[].shortDescription)' $sarifFile > $sarifFile.tmp
-          mv $sarifFile.tmp $sarifFile
-          jq 'del(.runs[].language)' $sarifFile > $sarifFile.tmp
-          mv $sarifFile.tmp $sarifFile
-          jq '
-            def walk(f):
-              . as $in
-              | if type == "object" then
-                reduce keys[] as $key
-                  ( {}; . + { ($key):  ($in[$key] | walk(f)) } ) | f
-              elif type == "array" then map( walk(f) ) | f
-              else f
-              end;
-          walk( if type == "object" and has("helpUri")
-                then .help.text += .helpUri
-                else .
-                end)
-          ' $sarifFile > $sarifFile.tmp
-          mv $sarifFile.tmp $sarifFile
+          node convert.js $sarifFile $sarifFile
           mv $sarifFile $outputDir/$((i++)).sarif
         done
