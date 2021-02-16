@@ -64,7 +64,6 @@ runs:
           }
 
           var converted = JSON.stringify(sarif, null, 2);
-          console.log(converted);
           fs.writeFileSync(args[1], converted);
         EOF
 
