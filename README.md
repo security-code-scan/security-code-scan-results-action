@@ -33,7 +33,7 @@ jobs:
           dotnet build
         
       - name: Convert sarif for uploading to GitHub
-        uses: security-code-scan/security-code-scan-results-action@v1.2
+        uses: security-code-scan/security-code-scan-results-action@v1.3
         
       - name: Upload sarif	
         uses: github/codeql-action/upload-sarif@v1
